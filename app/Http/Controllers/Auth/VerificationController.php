@@ -34,8 +34,13 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
+        // 登录认证中间件，登录后才能访问
         $this->middleware('auth');
+
+        //路由签名，中间件
         $this->middleware('signed')->only('verify');
+
+        // 访问频率中间件，1 分钟内不能超过 6 次
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 }
