@@ -3,16 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, MustVerifyEmailTrait;
 
     /**
      * The attributes that are mass assignable.
-     *
+     * 可以被批量赋值的属性，即可以写入的字段
      * @var array
      */
     protected $fillable = [
@@ -21,7 +22,7 @@ class User extends Authenticatable
 
     /**
      * The attributes that should be hidden for arrays.
-     *
+     * 输出时隐藏的字段
      * @var array
      */
     protected $hidden = [
@@ -36,4 +37,5 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
 }
