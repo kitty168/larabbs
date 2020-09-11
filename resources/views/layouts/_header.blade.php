@@ -20,8 +20,8 @@
 
       {{--右侧的导航--}}
       <url class="navbar-nav navbar-right">
-        <li class="nav-item"><a href="#" class="nav-link">登录</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">注册</a></li>
+        <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">登录</a></li>
+        <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">注册</a></li>
       </url>
 
     </div>
