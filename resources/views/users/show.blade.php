@@ -30,7 +30,12 @@
       {{-- 用户发布的内容 --}}
       <div class="card ">
         <div class="card-body">
-          暂无数据 ~_~
+          <ul class="nav nav-tabs">
+            <li class="nav-item"><a href="#" class="nav-link active bg-transparent">Ta 的话题</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Ta 的回复</a></li>
+          </ul>
+          {{-- topics() 得到该用户的话题调用 recent() 进行排序， 最后调用 paginate() 进行分页 --}}
+          @include('users._topics', ['topics' => $user->topics()->recent()->paginate(5)])
         </div>
       </div>
     </div>

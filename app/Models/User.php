@@ -50,4 +50,9 @@ class User extends Authenticatable
         return $value ?: $default_avatar;
     }
 
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
+    }
+
 }
