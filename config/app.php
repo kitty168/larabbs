@@ -179,6 +179,7 @@ return [
         // 加载ide_helper的配置
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
+
     ],
 
     /*
@@ -229,6 +230,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        // 自定义的别名
 
     ],
 
