@@ -38,4 +38,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * 属性获取器
+     * @param $value
+     * @return string
+     */
+    public function getAvatarAttribute($value)
+    {
+        $default_avatar = 'https://cdn.learnku.com/uploads/images/201709/20/1/PtDKbASVcz.png?imageView2/1/w/600/h/60';
+        return $value ?: $default_avatar;
+    }
+
 }
