@@ -39,7 +39,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * 属性获取器
+     * 属性访问器
      * @param $value
      * @return string
      */
