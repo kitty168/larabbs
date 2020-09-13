@@ -42,10 +42,14 @@ Route::resource('users', 'UsersController',['only' => ['show', 'update', 'edit']
 // Route::get('/users/{user}/edit', 'UsersController@edit')->name('users.edit');
 // Route::patch('/users/{user}', 'UsersController@update')->name('users.update');
 
-Route::resource('topics', 'TopicsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('topics', 'TopicsController', ['only' => ['index', 'create', 'store', 'update', 'edit', 'destroy']]);
 
 // category 资源路由
 Route::resource('categories', 'CategoriesController', ['only' => ['show']]);
 
 // 图片上传
 Route::post('upload_image', 'TopicsController@uploadImage')->name('topics.upload_image');
+
+
+// slug seo优化
+Route::get('topics/{topic}/{slug?}', 'TopicsController@show')->name('topics.show');
