@@ -20,8 +20,10 @@ class ReplyObserver
         // 评论数自增1
         // $reply->topic->increment('reply_count', 1);
         // 逻辑严谨调优
-        $reply->topic->reply_count = $reply->topic->replies->count();
-        $reply->topic->save();
+        // $reply->topic->reply_count = $reply->topic->replies->count();
+        // $reply->topic->save();
+        // 再次优化封装
+        $reply->topic->updateReplyCount();
 
         // 通知话题作者有行的评论
         $reply->topic->user->notify(new TopicReplied($reply));
@@ -30,5 +32,14 @@ class ReplyObserver
     public function updating(Reply $reply)
     {
         //
+    }
+
+    public function deleted(Reply $reply)
+    {
+        // $reply->topic->reply_count = $reply->topic->replies->count();
+        // $reply->topic->save();
+
+        // 优化封装
+        $reply->topic->updateReplyCount();
     }
 }
