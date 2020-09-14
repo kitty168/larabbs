@@ -5,7 +5,7 @@
     </p>
 
     <p class="float-right">
-      <a href="mailto:name@emial.com">联系我们</a>
+      <a href="mailto:{{ setting('contact_email','450038893@qq.com') }}">联系我们</a>
     </p>
   </div>
 </footer>
