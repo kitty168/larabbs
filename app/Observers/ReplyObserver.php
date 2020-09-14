@@ -17,16 +17,20 @@ class ReplyObserver
 
     public function created(Reply $reply)
     {
-        // 评论数自增1
-        // $reply->topic->increment('reply_count', 1);
-        // 逻辑严谨调优
-        // $reply->topic->reply_count = $reply->topic->replies->count();
-        // $reply->topic->save();
-        // 再次优化封装
-        $reply->topic->updateReplyCount();
+        // 命令行运行迁移时不做这些操作
+        if ( ! app()->runningInConsole()) {
+            // 评论数自增1
+            // $reply->topic->increment('reply_count', 1);
+            // 逻辑严谨调优
+            // $reply->topic->reply_count = $reply->topic->replies->count();
+            // $reply->topic->save();
+            // 再次优化封装
+            $reply->topic->updateReplyCount();
 
-        // 通知话题作者有行的评论
-        $reply->topic->user->notify(new TopicReplied($reply));
+            // 通知话题作者有行的评论
+            $reply->topic->user->notify(new TopicReplied($reply));
+        }
+
     }
 
     public function updating(Reply $reply)
