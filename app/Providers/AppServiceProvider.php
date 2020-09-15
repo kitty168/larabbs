@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Topic;
-use App\Observers\TopicObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
 		\App\Models\Reply::observe(\App\Observers\ReplyObserver::class);
 
         // 注册 TopicObserver , 启动服务
-        Topic::observe(TopicObserver::class);
+        \App\Models\Topic::observe(\App\Observers\TopicObserver::class);
+
+        \App\Models\Link::observe(\App\Observers\LinkObserver::class);
     }
 }
