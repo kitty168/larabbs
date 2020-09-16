@@ -177,7 +177,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         // 加载ide_helper的配置
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
 
     ],
