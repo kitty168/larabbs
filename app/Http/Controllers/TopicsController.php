@@ -8,7 +8,6 @@ use App\Models\Link;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TopicRequest;
 use Auth;
 
@@ -95,7 +94,7 @@ class TopicsController extends Controller
         // 判断是否有上传文件，并赋值给 $file
         if ($file = $request->upload_file) {
             // 保存图片到本地
-            $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
+            $result = $uploader->save($request->upload_file, 'topics', Auth::id(), 1024);
 
             // 成功，返回路径
             if ($result) {
