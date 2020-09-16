@@ -176,6 +176,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // 加载自定义的 Service Providers
+        App\Providers\EasySmsServiceProvider::class,
+
         // 加载ide_helper的配置
         //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
