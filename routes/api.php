@@ -34,13 +34,19 @@ $api->version('v1', [
         // 周期 单位：分钟
         'expires' => config('api.rate_limits.sign.expires'),
     ],function($api){
-        // 发送验证码
+        // 短信验证码
         $api->post('verificationCodes', 'VerificationCodesController@store')
             ->name('api.verificationCodes.store');
 
         // 用户注册
         $api->post('users', 'UsersController@store')
             ->name('api.users.store');
+
+        // 图片验证码
+        $api->post('captchas', 'CaptchasController@store')
+            ->name('api.captchas.store');
+
+
     });
 
 
