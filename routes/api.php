@@ -23,10 +23,17 @@ $api = app(\Dingo\Api\Routing\Router::class);
 $api->version('v1', [
     'namespace' => 'App\Http\Controllers\Api'
 ], function($api) {
+    // 发送验证码
     $api->post('verificationCodes', 'VerificationCodesController@store')
         ->name('api.verificationCodes.store');
+
+    // 用户注册
+    $api->post('users', 'UsersController@store')
+        ->name('api.users.store');
+
 });
 
+// 不同版本的 api 接口
 $api->version('v2', function($api) {
     $api->get('version',function (){
         return response('this is version v2');
