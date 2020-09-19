@@ -24,6 +24,11 @@ class EventServiceProvider extends ServiceProvider
             // EmailVerified 监听器
             \App\Listeners\EmailVerified::class,
         ],
+
+        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+            // ... other providers
+            'SocialiteProviders\Weixin\WeixinExtendSocialite@handle',
+        ],
     ];
 
     /**

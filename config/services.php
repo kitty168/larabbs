@@ -40,4 +40,11 @@ return [
         'key'   => env('BAIDU_TRANSLATE_KEY'),
     ],
 
+    // oauth 微信
+    'weixin' => [
+        'client_id' => env('WEIXIN_CLIENT_ID'),
+        'client_secret' => env('WEIXIN_CLIENT_SECRET'),
+        'redirect' => env('WEIXIN_REDIRECT_URI')
+    ],
+
 ];
