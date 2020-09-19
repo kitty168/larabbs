@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\AuthorizationsRquest;
 use App\Http\Requests\Api\SocialAuthorizationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthorizationsController extends Controller
@@ -63,6 +65,56 @@ class AuthorizationsController extends Controller
 
         }
 
-        return $this->response->array(['token' => $user->id]);
+        $token = Auth::guard('api')->fromUser($user);
+
+        return $this->respondWithToken($token);
+    }
+
+    public function store(AuthorizationsRquest $request)
+    {
+        $username = $request->username;
+
+        filter_var($username, FILTER_VALIDATE_EMAIL) ?
+            $credentials['email'] = $username :
+            $credentials['phone'] = $username;
+
+        $credentials['password'] = $request->password;
+
+        // attempt 方法可以根据参数查找数据库里是否存在该用户，存在则生成token
+        if (!$token = Auth::guard('api')->attempt($credentials)) {
+            return $this->response->errorUnauthorized('用户名或密码错误');
+        }
+
+        return $this->respondWithToken($token);
+
+    }
+
+    /**
+     * 刷新token
+     * @return \Dingo\Api\Http\Response
+     */
+    public function update()
+    {
+        $token = Auth::guard('api')->refresh();
+        return $this->respondWithToken($token);
+    }
+
+    /**
+     * 删除token，可以理解为退出登录
+     * @return \Dingo\Api\Http\Response
+     */
+    public function destroy()
+    {
+        Auth::guard('api')->logout();
+        return $this->response->noContent();
+    }
+
+    protected function respondWithToken($token)
+    {
+        return $this->response->array([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => Auth::guard('api')->factory()->getTTL() * 60
+        ]);
     }
 }
