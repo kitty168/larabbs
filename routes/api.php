@@ -21,7 +21,10 @@ use Illuminate\Http\Request;
 $api = app(\Dingo\Api\Routing\Router::class);
 
 $api->version('v1', [
-    'namespace' => 'App\Http\Controllers\Api'
+    'namespace' => 'App\Http\Controllers\Api',
+    // liyu/dingo-serializer-switch 中间件， 统一数据返回格式
+    // https://github.com/liyu001989/dingo-serializer-switch
+    'middleware' => 'serializer:array',
 ], function($api) {
 
     //访问频率控制分组
@@ -62,6 +65,24 @@ $api->version('v1', [
         $api->delete('authorizations/current', 'AuthorizationsController@destroy')
             ->name('api.authorizations.destroy');
 
+
+    });
+
+
+    $api->group([
+        'middleware' => 'api.throttle',
+        'limit' => config('api.rate_limits.access.limit'),
+        'expires' => config('api.rate_limits.access.expires'),
+    ],function($api){
+        // 游客可以访问的接口
+
+
+        // 需要 token 验证的接口
+        $api->group(['middleware' => 'api.auth'], function($api){
+            // 当前登录的用户信息
+            $api->get('user', 'UsersController@me')
+                ->name('api.user.show');
+        });
 
     });
 
