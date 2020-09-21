@@ -23,8 +23,12 @@ class AppServiceProvider extends ServiceProvider
             abort(404);
         });
 
-        \Dingo\Api\Facade\API::error(function (\Illuminate\Auth\Access\AuthorizationException $authorizationException) {
-            abort(403, $authorizationException->getMessage());
+        \API::error(function (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
+            abort(404);
+        });
+
+        \Dingo\Api\Facade\API::error(function (\Illuminate\Auth\Access\AuthorizationException $exception) {
+            abort(403, $exception->getMessage());
         });
 
 
