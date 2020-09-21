@@ -14,8 +14,20 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         if(app()->isLocal()){
+            // 本地开发模式, 注册SudoSu
             $this->app->register(\VIACreative\SudoSu\ServiceProvider::class);
         }
+
+        // 注册 api 异常处理
+        \Dingo\Api\Facade\API::error(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $notFoundHttpException) {
+            abort(404);
+        });
+
+        \Dingo\Api\Facade\API::error(function (\Illuminate\Auth\Access\AuthorizationException $authorizationException) {
+            abort(403, $authorizationException->getMessage());
+        });
+
+
     }
 
     /**

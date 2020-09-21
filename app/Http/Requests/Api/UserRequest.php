@@ -47,6 +47,8 @@ class UserRequest extends FormRequest
                 break;
         }
 
+        return [];
+
     }
 
     public function attributes()

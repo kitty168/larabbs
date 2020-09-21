@@ -24,7 +24,8 @@ $api->version('v1', [
     'namespace' => 'App\Http\Controllers\Api',
     // liyu/dingo-serializer-switch 中间件， 统一数据返回格式
     // https://github.com/liyu001989/dingo-serializer-switch
-    'middleware' => 'serializer:array',
+    // bindings 中间 绑定模型数据，依赖注入
+    'middleware' => ['serializer:array', 'bindings'],
 ], function($api) {
 
     //访问频率控制分组
@@ -96,6 +97,10 @@ $api->version('v1', [
             // 发布话题
             $api->post('topics', 'TopicsController@store')
                 ->name('api.topics.store');
+
+            // 修改话题
+            $api->patch('topics/{topic}', 'TopicsController@update')
+                ->name('api.topics.update');
         });
 
     });
