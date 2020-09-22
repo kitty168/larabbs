@@ -138,6 +138,10 @@ $api->version('v1', [
             // 我的通知列表
             $api->get('user/notifications', 'NotificationsController@index')
                 ->name('api.user.notifications.index');
+
+            // 当前用户的未读通知统计
+            $api->get('user/notifications/stats', 'NotificationsController@stats')
+                ->name('api.user.notifications.stats');
         });
 
     });

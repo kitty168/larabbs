@@ -18,4 +18,15 @@ class NotificationsController extends Controller
 
         return $this->response->paginator($notifications, new NotificationTransformer());
     }
+
+    /**
+     * 未读统计
+     * @return \Dingo\Api\Http\Response
+     */
+    public function stats()
+    {
+        return $this->response->array([
+            'unread_count' => $this->user()->notification_count
+        ]);
+    }
 }
