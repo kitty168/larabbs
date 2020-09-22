@@ -178,6 +178,7 @@ return [
 
         // 加载自定义的 Service Providers
         App\Providers\EasySmsServiceProvider::class,
+        App\Providers\JpushServiceProvider::class,
 
         // 加载ide_helper的配置
         //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
