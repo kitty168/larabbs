@@ -25,7 +25,7 @@ $api->version('v1', [
     // liyu/dingo-serializer-switch 中间件， 统一数据返回格式
     // https://github.com/liyu001989/dingo-serializer-switch
     // bindings 中间 绑定模型数据，依赖注入
-    'middleware' => ['serializer:array', 'bindings'],
+    'middleware' => ['serializer:array', 'bindings', 'change-locale'],
 ], function($api) {
 
     //访问频率控制分组

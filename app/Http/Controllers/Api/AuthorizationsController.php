@@ -82,7 +82,9 @@ class AuthorizationsController extends Controller
 
         // attempt 方法可以根据参数查找数据库里是否存在该用户，存在则生成token
         if (!$token = Auth::guard('api')->attempt($credentials)) {
-            return $this->response->errorUnauthorized('用户名或密码错误');
+            // return $this->response->errorUnauthorized('用户名或密码错误');
+            // 本地化语言设置
+            return $this->response->errorUnauthorized(trans('auth.failed'));
         }
 
         return $this->respondWithToken($token);
