@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
 
         // 注册 api 异常处理
         \Dingo\Api\Facade\API::error(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $notFoundHttpException) {
-            abort(404);
+            throw new \Symfony\Component\HttpKernel\Exception\HttpException(404,  '404 Not Found');
         });
 
         \API::error(function (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
