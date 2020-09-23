@@ -5,13 +5,24 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Api\AuthorizationsRquest;
 use App\Http\Requests\Api\SocialAuthorizationRequest;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response as Psr7Response;
 
 class AuthorizationsController extends Controller
 {
+    /**
+     * 第三方认证授权
+     * @param $type
+     * @param SocialAuthorizationRequest $request
+     * @return \Dingo\Api\Http\Response|void
+     */
     public function socialStore($type, SocialAuthorizationRequest $request)
     {
         if(!in_array($type, ['weixin'])){
@@ -33,7 +44,7 @@ class AuthorizationsController extends Controller
                 }
             }
 
-            // 等到用户的认证信息
+            // 得到用户的认证信息
             $oauthUser = $driver->userFromToken($token);
 
         }catch (\Exception $e){
@@ -65,13 +76,29 @@ class AuthorizationsController extends Controller
 
         }
 
+        // 通过 模型实例 生成token
         $token = Auth::guard('api')->fromUser($user);
 
         return $this->respondWithToken($token);
     }
 
-    public function store(AuthorizationsRquest $request)
+    /**
+     * 用户登录，生成token
+     * @param AuthorizationsRquest $request
+     * @return \Dingo\Api\Http\Response|void
+     */
+    public function store(AuthorizationsRquest $request, AuthorizationServer $server, ServerRequestInterface $serverRequest)
     {
+        // oauth2.0 passport 认证登录
+        try {
+            return $server->respondToAccessTokenRequest($serverRequest, new Psr7Response)->withStatus(201);
+        }catch (OAuthServerException $e) {
+            return $this->response->errorUnauthorized($e->getMessage());
+        }
+
+
+        // 默认得 auth 认证登录
+        /*
         $username = $request->username;
 
         filter_var($username, FILTER_VALIDATE_EMAIL) ?
@@ -88,6 +115,7 @@ class AuthorizationsController extends Controller
         }
 
         return $this->respondWithToken($token);
+        */
 
     }
 
@@ -95,10 +123,18 @@ class AuthorizationsController extends Controller
      * 刷新token
      * @return \Dingo\Api\Http\Response
      */
-    public function update()
+    public function update(AuthorizationServer $server, ServerRequestInterface $serverRequest)
     {
-        $token = Auth::guard('api')->refresh();
-        return $this->respondWithToken($token);
+        // 采用 oauth2.0 刷新token
+        try {
+            return $server->respondToAccessTokenRequest($serverRequest, new Psr7Response());
+        } catch (OAuthServerException $exception) {
+            return $this->response->errorUnauthorized($exception->getMessage());
+        }
+
+        // 普通模式的 Auth 方式刷新 token
+        // $token = Auth::guard('api')->refresh();
+        // return $this->respondWithToken($token);
     }
 
     /**
@@ -107,8 +143,18 @@ class AuthorizationsController extends Controller
      */
     public function destroy()
     {
-        Auth::guard('api')->logout();
-        return $this->response->noContent();
+        // 采用 oauth2.0 删除token
+        if(!empty($this->user())){
+            // 退出登录，清除token
+            $this->user()->token()->revoke();
+            return $this->response->noContent();
+        }else{
+            return $this->response->errorUnauthorized('The token is invalid.');
+        }
+
+        // 普通模式的 Auth 方式刷新 token
+        // Auth::guard('api')->logout();
+        // return $this->response->noContent();
     }
 
     protected function respondWithToken($token)
