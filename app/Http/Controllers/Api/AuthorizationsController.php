@@ -97,7 +97,7 @@ class AuthorizationsController extends Controller
         }
 
 
-        // 默认得 auth 认证登录
+        // Jwt模式 认证登录，生成token
         /*
         $username = $request->username;
 
@@ -132,7 +132,7 @@ class AuthorizationsController extends Controller
             return $this->response->errorUnauthorized($exception->getMessage());
         }
 
-        // 普通模式的 Auth 方式刷新 token
+        // JWT 模式 刷新 token
         // $token = Auth::guard('api')->refresh();
         // return $this->respondWithToken($token);
     }
@@ -152,7 +152,7 @@ class AuthorizationsController extends Controller
             return $this->response->errorUnauthorized('The token is invalid.');
         }
 
-        // 普通模式的 Auth 方式刷新 token
+        // JWT 模式 删除 token
         // Auth::guard('api')->logout();
         // return $this->response->noContent();
     }
