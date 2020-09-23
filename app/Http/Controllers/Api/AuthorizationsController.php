@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Api\AuthorizationsRquest;
 use App\Http\Requests\Api\SocialAuthorizationRequest;
 use App\Models\User;
+use App\Traits\PassportToken;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -17,6 +18,8 @@ use Zend\Diactoros\Response as Psr7Response;
 
 class AuthorizationsController extends Controller
 {
+    use PassportToken;
+
     /**
      * 第三方认证授权
      * @param $type
@@ -76,10 +79,15 @@ class AuthorizationsController extends Controller
 
         }
 
-        // 通过 模型实例 生成token
-        $token = Auth::guard('api')->fromUser($user);
+        // oauth2.0 的方式
+        $result = $this->getBearerTokenByUser($user, '1', false);
+        return $this->response->array($result)->setStatusCode(201);
 
-        return $this->respondWithToken($token);
+
+        // 通过 模型实例 生成token
+        // $token = Auth::guard('api')->fromUser($user);
+        //
+        // return $this->respondWithToken($token);
     }
 
     /**
