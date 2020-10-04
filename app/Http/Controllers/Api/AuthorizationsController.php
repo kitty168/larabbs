@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Api\AuthorizationsRquest;
 use App\Http\Requests\Api\SocialAuthorizationRequest;
+use App\Http\Requests\Api\WeappAuthorizationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -12,6 +13,12 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthorizationsController extends Controller
 {
+    /**
+     * 第三方登录
+     * @param $type
+     * @param SocialAuthorizationRequest $request
+     * @return \Dingo\Api\Http\Response|void
+     */
     public function socialStore($type, SocialAuthorizationRequest $request)
     {
         if(!in_array($type, ['weixin'])){
@@ -70,6 +77,11 @@ class AuthorizationsController extends Controller
         return $this->respondWithToken($token);
     }
 
+    /**
+     * 登录
+     * @param AuthorizationsRquest $request
+     * @return \Dingo\Api\Http\Response|void
+     */
     public function store(AuthorizationsRquest $request)
     {
         $username = $request->username;
@@ -92,6 +104,68 @@ class AuthorizationsController extends Controller
     }
 
     /**
+     * 小程序登录
+     * @param WeappAuthorizationRequest $request
+     * @return \Dingo\Api\Http\Response|void
+     */
+    public function weappStore(WeappAuthorizationRequest $request)
+    {
+        $code = $request->code;
+
+        // 根据 code 获取微信 openid 和 session_key
+        $miniProgram = \EasyWeChat::miniProgram();
+
+        $data = $miniProgram->auth->session($code);
+
+        // 如果结果错误，说明 code 已过期或不正确，返回 401 错误
+        if (isset($data['errcode'])) {
+            return $this->response->errorUnauthorized('code 不正确');
+        }
+
+        // 找到 openid 对应的用户
+        $user = User::where('weapp_openid', $data['openid'])->first();
+
+        $attributes['weixin_session_key'] = $data['session_key'];
+
+        // 没有找到对应用户则需要提交用户名和密码进行用户绑定
+        if (!$user) {
+            // 如果未提交用户名，返回403错误
+            if (!$request->username) {
+                return $this->response->errorForbidden('用户不存在');
+            }
+            $username = $request->username;
+
+            // 用户名可以是邮箱或手机号
+            filter_var($username, FILTER_VALIDATE_EMAIL) ?
+                $credentials['email'] = $username :
+                $credentials['phone'] = $username;
+
+            $credentials['password'] = $request->password;
+
+            // 验证用户名和密码是否正确
+            if(!Auth::guard('api')->once($credentials)) {
+                return $this->response->errorUnauthorized('用户名或密码错误');
+            }
+
+            // 获取对应的用户
+            $user = Auth::guard('api')->getUser();
+            $attributes['weapp_openid'] = $data['openid'];
+
+        }
+
+        // 更新用户数据
+        $user->update($attributes);
+
+        // 为对用用户创建 JWT
+        $token = Auth::guard('api')->fromUser($user);
+
+        return $this->respondWithToken($token)->setStatusCode(201);
+
+    }
+
+
+
+    /**
      * 刷新token
      * @return \Dingo\Api\Http\Response
      */
@@ -111,6 +185,11 @@ class AuthorizationsController extends Controller
         return $this->response->noContent();
     }
 
+    /**
+     * 携带token进行返回
+     * @param $token
+     * @return \Dingo\Api\Http\Response
+     */
     protected function respondWithToken($token)
     {
         return $this->response->array([
